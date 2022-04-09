@@ -1,52 +1,74 @@
 <html>
-    <head>
-        <title>Socket.IO chat</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="container" style="border:1px solid #cecece;">
-            <div class="row justify-content-center">
-              <div class="col-sm-3 col-xs-offset-4">
-            
-            <table class="table table-striped">
-                  <tr>
-                    <td> <ul id="messages" type="none"></ul></td>
-                  </tr>
-            </table>
-       
-        <form id="form" action="" class="form-inline">
-        <input id="input" autocomplete="off" class="form-control"><button type="submit" class="btn btn-primary">Send</button>
-        </form>
 
-              </div>
+<head>
+    <title>Socket.IO chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container" style="border:1px solid #cecece;">
+        <div class="row justify-content-center">
+            <div class="col-sm-3 col-xs-offset-4">
+
+                <table class="table table-striped">
+                    <tr>
+                        <td>
+                            <ul id="messages" type="none"></ul>
+                        </td>
+                    </tr>
+                </table>
+
+                <form id="form" action="" class="form-inline">
+                    <input id="input" autocomplete="off" class="form-control"><button type="submit"
+                        class="btn btn-primary">Send</button>
+                </form>
+
             </div>
-            </div>
+        </div>
+    </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket=io();
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var person = null
+        function acceptName() {
+            person = prompt("Please enter your name");
+            if (person != null) {
+               alert("Weclome "+person)
+            }
+        }
 
-            var messages=document.getElementById('messages');
-            var form=document.getElementById('form');
-            var input=document.getElementById('input');
+        var socket = io();
 
-            form.addEventListener('submit',function(e){
-                e.preventDefault();
-                if (input.value){
-                    socket.emit('chat message',input.value);
-                    input.value='';
+        var messages = document.getElementById('messages');
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (input.value) {
+                console.log("Sending Event to Sever ")
+                let msg = {
+                    "username":person,
+                    "message":input.value
                 }
-            });
+                socket.emit('chat-message-recieve', msg);
+                input.value = '';
+            }
+        });
 
-            socket.on('chat message',(msg) =>{
-                var item=document.createElement('li');
-                item.textContent=msg;
-                messages.appendChild(item);
-                window.scrollTo(0, document.body.scrollHeight);
-            });
+        socket.on('chat-message-send', (msg) => {
+            console.log(msg)
+            console.log("Message recieved from Server")
+            var item = document.createElement('li');
+            item.textContent = msg.username + "said "+msg.message+" at "+msg.timestamp;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+        acceptName()
 
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
