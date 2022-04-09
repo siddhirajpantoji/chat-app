@@ -15,10 +15,11 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
-    socket.on('chat-message-recieve', (msg) => {
+    socket.on('chat-message-recieve', ( user, msg) => {
         console.log("Chat Message recieve Event ")
-        msg.timestamp = moment().format("YYYY-MM-DD HH:mm:ss")
-        io.emit('chat-message-send', msg);
+        var timestamp = moment().format("YYYY-MM-DD HH:mm:ss")
+        socket.broadcast.emit('chat-message-send', msg, user,timestamp);
+        socket.emit('chat-message-send', msg, "Me",timestamp);
         console.log("Sending message to client ")
         console.log('message: ' + msg);
     });

@@ -10,7 +10,7 @@
 <body>
     <div class="container" style="border:1px solid #cecece;">
         <div class="row justify-content-center">
-            <div class="col-sm-3 col-xs-offset-4">
+            <div class="col-12 col-xs-offset-4">
 
                 <table class="table table-striped">
                     <tr>
@@ -53,16 +53,20 @@
                     "username":person,
                     "message":input.value
                 }
-                socket.emit('chat-message-recieve', msg);
+                socket.emit('chat-message-recieve',person, input.value);
                 input.value = '';
             }
         });
 
-        socket.on('chat-message-send', (msg) => {
+        socket.on('chat-message-send', (msg, user, timestamp) => {
             console.log(msg)
             console.log("Message recieved from Server")
             var item = document.createElement('li');
-            item.textContent = msg.username + "said "+msg.message+" at "+msg.timestamp;
+            if(user=="Me"){
+                item.style= "text-align:right"
+            }
+            
+            item.textContent = user + "said "+msg+" at "+timestamp;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         });
